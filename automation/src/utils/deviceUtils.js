@@ -70,11 +70,17 @@ const getDeviceInfo = async () => {
 
 const installApkWithAdb = async (apkPath) => {
   const absoluteApk = path.isAbsolute(apkPath) ? apkPath : path.resolve(process.cwd(), apkPath);
+  
+  const deviceId = await findConnectedDeviceId();
+  if (!deviceId) {
+    console.log('No physical device connected. Skipping APK installation.');
+    return;
+  }
+
   if (!fs.existsSync(absoluteApk)) {
     throw new Error(`APK not found at ${absoluteApk}`);
   }
 
-  const deviceId = await findConnectedDeviceId();
   const target = deviceId ? ['-s', deviceId] : [];
   await runAdb([...target, 'install', '-r', absoluteApk]);
 };

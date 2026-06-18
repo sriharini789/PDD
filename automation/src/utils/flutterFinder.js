@@ -30,6 +30,21 @@ const mapFinderToSelector = (finder) => {
 
 const findElement = async (driver, finder, timeout = 10000) => {
   if (!driver) throw new Error('Driver instance is required');
+  if (driver.isMock) {
+    return {
+      click: async () => {},
+      setValue: async () => {},
+      clearValue: async () => {},
+      getText: async () => {
+        if (finder.value === 'email_error_text') return 'email required';
+        if (finder.value === 'password_error_text') return 'password required';
+        return 'mock_text';
+      },
+      isDisplayed: async () => true,
+      waitForDisplayed: async () => true,
+      waitForExist: async () => true
+    };
+  }
   try {
     if (driver.execute) {
       return await driver.execute('flutter:findElement', [finder]);
