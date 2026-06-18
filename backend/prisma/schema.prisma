@@ -8,147 +8,199 @@ datasource db {
 }
 
 model User {
-  id                 Int               @id @default(autoincrement())
-  fullName           String
-  email              String            @unique
-  passwordHash       String
-  isVerified         Boolean           @default(false)
-  verificationToken  String?
-  resetToken         String?
-  resetTokenExpires  DateTime?
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
-  
-  profile            Profile?
-  papers             Paper[]
-  readingLists       ReadingList[]
-  notes              Note[]
-  notifications      Notification[]
-  settings           Settings?
-  supportTickets     SupportTicket[]
-  feedbacks          Feedback[]
-  chatMessages       ChatMessage[]
+  id                Int             @id @default(autoincrement())
+  fullName          String
+  email             String          @unique
+  passwordHash      String
+  isVerified        Boolean         @default(false)
+  verificationToken String?
+  resetToken        String?
+  resetTokenExpires DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  chatMessages      ChatMessage[]
+  feedbacks         Feedback[]
+  notes             Note[]
+  notifications     Notification[]
+  papers            Paper[]
+  profile           Profile?
+  readingLists      ReadingList[]
+  settings          Settings?
+  supportTickets    SupportTicket[]
 }
 
 model Profile {
   id            Int      @id @default(autoincrement())
   userId        Int      @unique
-  user          User     @relation(fields: [userId], references: [id])
   academicLevel String?
   interests     String[]
   avatarUrl     String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id])
 }
 
 model Paper {
-  id              Int            @id @default(autoincrement())
-  userId          Int
-  user            User           @relation(fields: [userId], references: [id])
-  readingListId   Int?
-  readingList     ReadingList?   @relation(fields: [readingListId], references: [id])
-  title           String
-  authors         String?
-  fileName        String
-  fileSize        String?
-  status          String         @default("uploading") // uploading, processing, completed, failed
-  processingStage String?        // extracting, analyzing, summarizing, done
-  summary         String?
-  topics          String[]
-  content         String?
-  citationApa     String?
-  citationMla     String?
-  citationIeee    String?
-  
-  verification    Json?
-  summaries       Json?
-  insights        Json?
-  topicsExt       Json?
-  citations       Json?
+  id               Int           @id @default(autoincrement())
+  userId           Int
+  readingListId    Int?
+  title            String
+  authors          String?
+  fileName         String
+  fileSize         String?
+  status           String        @default("uploading")
+  processingStage  String?
+  summary          String?
+  topics           String[]
+  content          String?
+  citationApa      String?
+  citationMla      String?
+  citationIeee     String?
+  isFavorite       Boolean       @default(false)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  citations        Json?
   extractedContent Json?
-  references      Json?
-  metrics         Json?
-
-  isFavorite      Boolean        @default(false)
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  
-  chatMessages    ChatMessage[]
-  notes           Note[]
+  insights         Json?
+  metrics          Json?
+  references       Json?
+  summaries        Json?
+  topicsExt        Json?
+  verification     Json?
+  chatMessages     ChatMessage[]
+  notes            Note[]
+  readingList      ReadingList?  @relation(fields: [readingListId], references: [id])
+  user             User          @relation(fields: [userId], references: [id])
 }
 
 model ChatMessage {
   id        Int      @id @default(autoincrement())
   paperId   Int
-  paper     Paper    @relation(fields: [paperId], references: [id])
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  sender    String   // 'user' or 'ai'
+  sender    String
   message   String
   createdAt DateTime @default(now())
+  paper     Paper    @relation(fields: [paperId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model ReadingList {
   id        Int      @id @default(autoincrement())
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
   papers    Paper[]
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Note {
   id              Int      @id @default(autoincrement())
   paperId         Int
-  paper           Paper    @relation(fields: [paperId], references: [id])
   userId          Int
-  user            User     @relation(fields: [userId], references: [id])
   content         String
   highlightedText String?
   pageNumber      Int?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  paper           Paper    @relation(fields: [paperId], references: [id])
+  user            User     @relation(fields: [userId], references: [id])
 }
 
 model Notification {
   id        Int      @id @default(autoincrement())
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
   title     String
   message   String
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Settings {
   id               Int      @id @default(autoincrement())
   userId           Int      @unique
-  user             User     @relation(fields: [userId], references: [id])
   darkMode         Boolean  @default(false)
   aiModel          String   @default("gemini-1.5-pro")
   privacyTelemetry Boolean  @default(true)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+  user             User     @relation(fields: [userId], references: [id])
 }
 
 model SupportTicket {
   id          Int      @id @default(autoincrement())
   userId      Int
-  user        User     @relation(fields: [userId], references: [id])
   subject     String
   description String
   status      String   @default("open")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id])
 }
 
 model Feedback {
   id        Int      @id @default(autoincrement())
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
   rating    Int
   comment   String?
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model chat_messages {
+  id         Int       @id @default(autoincrement())
+  paper_id   Int
+  user_id    Int
+  sender     String    @db.VarChar(10)
+  message    String
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  papers     papers    @relation(fields: [paper_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model papers {
+  id               Int             @id @default(autoincrement())
+  user_id          Int
+  title            String          @db.VarChar(255)
+  authors          String          @db.VarChar(255)
+  file_name        String          @db.VarChar(255)
+  file_size        String          @db.VarChar(50)
+  status           String          @default("uploading") @db.VarChar(50)
+  processing_stage String          @default("extracting") @db.VarChar(50)
+  summary          String?
+  topics           String[]        @default([])
+  content          String?
+  citation_apa     String?
+  citation_mla     String?
+  citation_ieee    String?
+  created_at       DateTime?       @default(now()) @db.Timestamp(6)
+  chat_messages    chat_messages[]
+  users            users           @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model profiles {
+  user_id        Int       @id
+  academic_level String    @db.VarChar(50)
+  interests      String[]
+  avatar_url     String?   @db.VarChar(255)
+  created_at     DateTime? @default(now()) @db.Timestamp(6)
+  updated_at     DateTime? @default(now()) @db.Timestamp(6)
+  users          users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model users {
+  id                  Int             @id @default(autoincrement())
+  full_name           String          @db.VarChar(100)
+  email               String          @unique @db.VarChar(100)
+  password_hash       String          @db.VarChar(255)
+  is_verified         Boolean?        @default(false)
+  verification_token  String?         @db.VarChar(255)
+  reset_token         String?         @db.VarChar(255)
+  reset_token_expires DateTime?       @db.Timestamp(6)
+  created_at          DateTime?       @default(now()) @db.Timestamp(6)
+  updated_at          DateTime?       @default(now()) @db.Timestamp(6)
+  chat_messages       chat_messages[]
+  papers              papers[]
+  profiles            profiles?
 }

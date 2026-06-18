@@ -1,0 +1,24 @@
+{
+  "name": "flutter-appium-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Enterprise-ready Appium 2.x E2E automation framework for Flutter Android apps.",
+  "scripts": {
+    "install-apk": "node scripts/installApk.js",
+    "start-appium": "npx appium --use-plugins=flutter --log-level error",
+    "test": "node scripts/runTests.js",
+    "clean": "rimraf reports/** && rimraf automation/reports/**"
+  },
+  "dependencies": {
+    "appium": "^2.0.0",
+    "appium-flutter-driver": "^2.19.0",
+    "chai": "^4.3.7",
+    "exceljs": "^4.3.0",
+    "fs-extra": "^11.1.1",
+    "mocha": "^10.2.0",
+    "mochawesome": "^7.1.4",
+    "winston": "^3.9.0",
+    "webdriverio": "^8.20.0",
+    "dotenv": "^16.1.4"
+  }
+}

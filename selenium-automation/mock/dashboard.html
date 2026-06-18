@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Research AI - Dashboard</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      color: #f8fafc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(10px);
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      width: 450px;
+      text-align: center;
+    }
+    h1 {
+      color: #6366f1;
+      margin-bottom: 16px;
+    }
+    p {
+      color: #94a3b8;
+      margin-bottom: 30px;
+    }
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      background: #ef4444;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #dc2626;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1 id="welcome-text">Welcome to Research AI</h1>
+    <p>You have successfully authenticated and logged into the portal.</p>
+    <button id="logout-button" onclick="handleLogout()">Logout</button>
+  </div>
+
+  <script>
+    function handleLogout() {
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>

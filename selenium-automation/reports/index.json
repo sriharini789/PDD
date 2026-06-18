@@ -1,0 +1,241 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 5,
+    "passes": 5,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-06-18T08:54:12.012Z",
+    "end": "2026-06-18T08:54:14.852Z",
+    "duration": 2840,
+    "testsRegistered": 5,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "04745499-4825-4da9-844f-a4ccc8a1c004",
+      "title": "",
+      "fullFile": "C:\\Users\\anugo\\Downloads\\S PDD\\selenium-automation\\src\\tests\\login.spec.js",
+      "file": "\\src\\tests\\login.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "f764d246-d71d-484d-8590-47dbd39bdb60",
+          "title": "Web App E2E - Login and Navigation",
+          "fullFile": "C:\\Users\\anugo\\Downloads\\S PDD\\selenium-automation\\src\\tests\\login.spec.js",
+          "file": "\\src\\tests\\login.spec.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"Web App E2E - Login and Navigation\"",
+              "fullTitle": "Web App E2E - Login and Navigation \"before all\" hook in \"Web App E2E - Login and Navigation\"",
+              "timedOut": false,
+              "duration": 1569,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await setup();",
+              "err": {},
+              "uuid": "fb225f77-7780-4707-8016-f7776764fc88",
+              "parentUUID": "f764d246-d71d-484d-8590-47dbd39bdb60",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"Web App E2E - Login and Navigation\"",
+              "fullTitle": "Web App E2E - Login and Navigation \"after all\" hook in \"Web App E2E - Login and Navigation\"",
+              "timedOut": false,
+              "duration": 110,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await finalize();",
+              "err": {},
+              "uuid": "666198b0-c9c5-44f6-9373-b12da92402d5",
+              "parentUUID": "f764d246-d71d-484d-8590-47dbd39bdb60",
+              "isHook": true,
+              "skipped": false
+            },
+            {
+              "title": "\"after each\" hook in \"Web App E2E - Login and Navigation\"",
+              "fullTitle": "Web App E2E - Login and Navigation \"after each\" hook in \"Web App E2E - Login and Navigation\"",
+              "timedOut": false,
+              "duration": 0,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await handleTestResult(this.currentTest);",
+              "err": {},
+              "uuid": "25a6bdb0-64e1-4429-be25-368cc33ab897",
+              "parentUUID": "f764d246-d71d-484d-8590-47dbd39bdb60",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [
+            {
+              "title": "should navigate to the web application login page",
+              "fullTitle": "Web App E2E - Login and Navigation should navigate to the web application login page",
+              "timedOut": false,
+              "duration": 88,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const startTime = Date.now();\naddExecutionLog({\n  timestamp: new Date().toISOString(),\n  testName: 'Navigation',\n  step: 'Navigate to appUrl',\n  result: 'Started',\n  remarks: `Navigating to ${config.appUrl}`\n});\nawait testContext.driver.get(config.appUrl);\naddTestCase({\n  testId: 'TC_WEB_001',\n  module: 'Navigation',\n  scenario: 'Navigate to App Url',\n  status: 'Passed',\n  browser: config.browser,\n  duration: `${Math.round((Date.now() - startTime) / 1000)}s`\n});\naddExecutionLog({\n  timestamp: new Date().toISOString(),\n  testName: 'Navigation',\n  step: 'Open URL',\n  result: 'Passed',\n  remarks: 'Application login page loaded successfully'\n});",
+              "err": {},
+              "uuid": "aa0ffcd4-12dc-4b6c-9f5f-a2a1f7cd3f29",
+              "parentUUID": "f764d246-d71d-484d-8590-47dbd39bdb60",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should show validation messages when login fields are empty",
+              "fullTitle": "Web App E2E - Login and Navigation should show validation messages when login fields are empty",
+              "timedOut": false,
+              "duration": 256,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const startTime = Date.now();\nconst loginPage = new LoginPage(testContext.driver);\naddExecutionLog({\n  timestamp: new Date().toISOString(),\n  testName: 'Login Validation',\n  step: 'Click Login with empty fields',\n  result: 'Started',\n  remarks: 'Submitting login without input values'\n});\nawait loginPage.submitLogin();\nconst emailError = await loginPage.getEmailError();\nconst passwordError = await loginPage.getPasswordError();\nexpect(emailError).to.include('required');\nexpect(passwordError).to.include('required');\naddTestCase({\n  testId: 'TC_WEB_002',\n  module: 'Authentication',\n  scenario: 'Empty login fields show validation',\n  status: 'Passed',\n  browser: config.browser,\n  duration: `${Math.round((Date.now() - startTime) / 1000)}s`\n});\naddExecutionLog({\n  timestamp: new Date().toISOString(),\n  testName: 'Login Validation',\n  step: 'Verify validation messages',\n  result: 'Passed',\n  remarks: `Email Error: \"${emailError}\", Password Error: \"${passwordError}\"`\n});",
+              "err": {},
+              "uuid": "3f0138a9-3ba9-455d-8792-824b1eda2776",
+              "parentUUID": "f764d246-d71d-484d-8590-47dbd39bdb60",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should reject invalid credentials and show error message",
+              "fullTitle": "Web App E2E - Login and Navigation should reject invalid credentials and show error message",
+              "timedOut": false,
+              "duration": 340,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const startTime = Date.now();\nconst loginPage = new LoginPage(testContext.driver);\naddExecutionLog({\n  timestamp: new Date().toISOString(),\n  testName: 'Invalid Login',\n  step: 'Enter invalid credentials and submit',\n  result: 'Started',\n  remarks: 'Submitting credentials for wronguser@example.com'\n});\nawait loginPage.enterEmail('wronguser@example.com');\nawait loginPage.enterPassword('incorrectpass');\nawait loginPage.submitLogin();\nconst emailError = await loginPage.getEmailError();\nexpect(emailError).to.include('Invalid');\naddTestCase({\n  testId: 'TC_WEB_003',\n  module: 'Authentication',\n  scenario: 'Invalid credentials show error',\n  status: 'Passed',\n  browser: config.browser,\n  duration: `${Math.round((Date.now() - startTime) / 1000)}s`\n});\naddExecutionLog({\n  timestamp: new Date().toISOString(),\n  testName: 'Invalid Login',\n  step: 'Verify invalid credential error',\n  result: 'Passed',\n  remarks: `Error text displayed: \"${emailError}\"`\n});",
+              "err": {},
+              "uuid": "ad1906b2-b57d-42ed-bf01-b9e668774747",
+              "parentUUID": "f764d246-d71d-484d-8590-47dbd39bdb60",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should login successfully and validate home navigation",
+              "fullTitle": "Web App E2E - Login and Navigation should login successfully and validate home navigation",
+              "timedOut": false,
+              "duration": 356,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const startTime = Date.now();\nconst loginPage = new LoginPage(testContext.driver);\nconst homePage = new HomePage(testContext.driver);\naddExecutionLog({\n  timestamp: new Date().toISOString(),\n  testName: 'Valid Login',\n  step: 'Enter valid credentials and submit',\n  result: 'Started',\n  remarks: `Logging in with ${config.testEmail}`\n});\nawait loginPage.enterEmail(config.testEmail);\nawait loginPage.enterPassword(config.testPassword);\nawait loginPage.submitLogin();\nconst homeLoaded = await homePage.isLoaded();\nexpect(homeLoaded).to.be.true;\naddTestCase({\n  testId: 'TC_WEB_004',\n  module: 'Authentication',\n  scenario: 'Valid login navigates to home',\n  status: 'Passed',\n  browser: config.browser,\n  duration: `${Math.round((Date.now() - startTime) / 1000)}s`\n});\naddExecutionLog({\n  timestamp: new Date().toISOString(),\n  testName: 'Valid Login',\n  step: 'Verify dashboard loaded',\n  result: 'Passed',\n  remarks: 'Dashboard page displayed welcome message successfully'\n});",
+              "err": {},
+              "uuid": "45491ac0-2ae0-4a29-9c4a-d09614444446",
+              "parentUUID": "f764d246-d71d-484d-8590-47dbd39bdb60",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should logout and return to login screen",
+              "fullTitle": "Web App E2E - Login and Navigation should logout and return to login screen",
+              "timedOut": false,
+              "duration": 111,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const startTime = Date.now();\nconst homePage = new HomePage(testContext.driver);\nconst loginPage = new LoginPage(testContext.driver);\naddExecutionLog({\n  timestamp: new Date().toISOString(),\n  testName: 'Logout',\n  step: 'Click logout button',\n  result: 'Started',\n  remarks: 'Attempting to log out from dashboard'\n});\nawait homePage.logout();\nconst isLoginVisible = await loginPage.isDisplayed(loginPage.loginButton);\nexpect(isLoginVisible).to.be.true;\naddTestCase({\n  testId: 'TC_WEB_005',\n  module: 'Authentication',\n  scenario: 'Logout returns to login page',\n  status: 'Passed',\n  browser: config.browser,\n  duration: `${Math.round((Date.now() - startTime) / 1000)}s`\n});\naddExecutionLog({\n  timestamp: new Date().toISOString(),\n  testName: 'Logout',\n  step: 'Verify login page loaded',\n  result: 'Passed',\n  remarks: 'Login button is displayed back on screen'\n});",
+              "err": {},
+              "uuid": "e3eabc16-bd09-474a-aa19-95e6f813cc01",
+              "parentUUID": "f764d246-d71d-484d-8590-47dbd39bdb60",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "aa0ffcd4-12dc-4b6c-9f5f-a2a1f7cd3f29",
+            "3f0138a9-3ba9-455d-8792-824b1eda2776",
+            "ad1906b2-b57d-42ed-bf01-b9e668774747",
+            "45491ac0-2ae0-4a29-9c4a-d09614444446",
+            "e3eabc16-bd09-474a-aa19-95e6f813cc01"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 1151,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 180000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 180000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "10.8.2"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": true,
+        "reportFilename": "index",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "C:\\Users\\anugo\\Downloads\\S PDD\\selenium-automation\\reports",
+        "reportFilename": "index",
+        "quiet": true,
+        "overwrite": true,
+        "html": true,
+        "json": true,
+        "charts": true,
+        "inlineAssets": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}

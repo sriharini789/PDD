@@ -23,7 +23,7 @@ exports.uploadPaper = async (req, res) => {
       }
     });
 
-    res.json({ success: true, paper });
+    res.status(201).json({ success: true, paper });
 
     // --- Background Processing ---
     setImmediate(async () => {

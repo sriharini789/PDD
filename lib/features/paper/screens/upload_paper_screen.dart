@@ -5,6 +5,7 @@ import 'dart:convert';
 import '../../../core/router.dart';
 import '../../../core/constants.dart';
 import '../../../core/responsive.dart';
+import '../../../core/api_config.dart';
 import '../../../core/auth_service.dart';
 import '../../../models/paper_model.dart';
 
@@ -31,7 +32,7 @@ class UploadPaperScreen extends StatelessWidget {
     try {
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('http://localhost:5001/api/papers/upload'),
+        Uri.parse('${ApiConfig.baseUrl}/api/papers/upload'),
       );
 
       if (authService.token != null) {

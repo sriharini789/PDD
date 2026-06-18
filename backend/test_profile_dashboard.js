@@ -77,17 +77,16 @@ const runTests = async () => {
 
     // 4. Upload paper
     console.log('📄 4. Testing Paper Upload Initiation...');
+    const formData = new FormData();
+    const mockPdfBlob = new Blob(['%PDF-1.4 mock pdf content'], { type: 'application/pdf' });
+    formData.append('file', mockPdfBlob, 'attention_paper.pdf');
+
     const uploadRes = await fetch(`${BASE_URL}/papers/upload`, {
       method: 'POST',
       headers: { 
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({
-        title: 'Attention is All You Need',
-        fileName: 'attention_paper.pdf',
-        fileSize: '2.1 MB'
-      })
+      body: formData
     });
     const uploadData = await uploadRes.json();
     console.log(`Response Status: ${uploadRes.status}`);

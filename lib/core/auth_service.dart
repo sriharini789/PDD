@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'api_config.dart';
 
 class AuthService extends ChangeNotifier {
   static final AuthService _instance = AuthService._internal();
@@ -12,13 +13,7 @@ class AuthService extends ChangeNotifier {
   Map<String, dynamic>? _user;
   bool _initialized = false;
 
-  String get baseUrl {
-    if (kIsWeb) {
-      return 'http://localhost:5001/api/auth';
-    } else {
-      return 'http://127.0.0.1:5001/api/auth';
-    }
-  }
+  String get baseUrl => '${ApiConfig.baseUrl}/api/auth';
 
   String? get token => _token;
   Map<String, dynamic>? get user => _user;

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants.dart';
 import '../../../core/responsive.dart';
+import '../../../core/api_config.dart';
 import '../../../core/router.dart';
 import '../../../core/auth_service.dart';
 import '../../../core/theme.dart';
@@ -48,7 +49,7 @@ class _PaperFullScreenState extends State<PaperFullScreen> with SingleTickerProv
 
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:5001/api/papers/${paper.id}'),
+        Uri.parse('${ApiConfig.baseUrl}/api/papers/${paper.id}'),
         headers: {
           if (authService.token != null) 'Authorization': 'Bearer ${authService.token}',
         },
@@ -74,7 +75,7 @@ class _PaperFullScreenState extends State<PaperFullScreen> with SingleTickerProv
   Future<void> _launchExport(String format) async {
     if (_paper == null) return;
     final token = authService.token;
-    final url = Uri.parse('http://localhost:5001/api/export/${_paper!.id}/$format?token=$token');
+    final url = Uri.parse('${ApiConfig.baseUrl}/api/export/${_paper!.id}/$format?token=$token');
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not launch export URL')));

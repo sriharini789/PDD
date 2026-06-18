@@ -4,6 +4,7 @@ import 'dart:convert';
 import '../../../core/router.dart';
 import '../../../core/constants.dart';
 import '../../../core/responsive.dart';
+import '../../../core/api_config.dart';
 import '../../../core/auth_service.dart';
 import '../../../models/paper_model.dart';
 
@@ -61,7 +62,7 @@ class _ProcessingScreenState extends State<ProcessingScreen> {
     if (_hasError) return;
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:5001/api/papers/$paperId'),
+        Uri.parse('${ApiConfig.baseUrl}/api/papers/$paperId'),
         headers: {
           if (authService.token != null) 'Authorization': 'Bearer ${authService.token}',
         },
