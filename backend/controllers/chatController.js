@@ -20,7 +20,7 @@ exports.chatWithPaper = async (req, res) => {
       data: { paperId, userId, sender: 'ai', message: aiAnswer }
     });
 
-    res.json({ success: true, answer: aiMsg });
+    res.status(201).json({ success: true, userMessage: userMsg, aiMessage: aiMsg, answer: aiMsg });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

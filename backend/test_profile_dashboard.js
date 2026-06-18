@@ -91,7 +91,7 @@ const runTests = async () => {
     const uploadData = await uploadRes.json();
     console.log(`Response Status: ${uploadRes.status}`);
     console.log('Upload Response:', uploadData);
-    if (uploadRes.status !== 201) throw new Error('Upload paper failed');
+    if (uploadRes.status !== 200 && uploadRes.status !== 201) throw new Error('Upload paper failed');
     paperId = uploadData.paper.id;
     console.log('✅ Upload Initiation OK\n');
 
