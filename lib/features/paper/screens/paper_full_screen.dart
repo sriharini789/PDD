@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
@@ -205,7 +206,7 @@ class _PaperFullScreenState extends State<PaperFullScreen> with SingleTickerProv
           ),
           const SizedBox(height: AppSpacing.xl),
 
-          // Summaries
+          // Summaries Section Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -213,9 +214,9 @@ class _PaperFullScreenState extends State<PaperFullScreen> with SingleTickerProv
               DropdownButton<String>(
                 value: _summaryLevel,
                 items: const [
-                  DropdownMenuItem(value: 'short', child: Text('Short')),
-                  DropdownMenuItem(value: 'medium', child: Text('Medium')),
-                  DropdownMenuItem(value: 'detailed', child: Text('Detailed')),
+                  DropdownMenuItem(value: 'short', child: Text('Short Summary')),
+                  DropdownMenuItem(value: 'medium', child: Text('Medium Summary')),
+                  DropdownMenuItem(value: 'detailed', child: Text('Detailed Summary')),
                 ],
                 onChanged: (val) {
                   if (val != null) setState(() => _summaryLevel = val);
@@ -223,17 +224,52 @@ class _PaperFullScreenState extends State<PaperFullScreen> with SingleTickerProv
               ),
             ],
           ),
+          const SizedBox(height: AppSpacing.sm),
           Builder(builder: (context) {
             final summary = summaries[_summaryLevel] ?? _paper?.summary;
             final summaryDisplay = (summary == null || summary.toString().trim().isEmpty) 
                 ? 'No summary available.' 
                 : summary.toString();
+
+            // Format Short and Medium as bullet points
+            if (_summaryLevel == 'short' || _summaryLevel == 'medium' || summaryDisplay.trim().startsWith('-')) {
+              final bullets = summaryDisplay
+                  .split('\n')
+                  .map((e) => e.trim().replaceFirst(RegExp(r'^[-*•]\s*'), ''))
+                  .where((e) => e.isNotEmpty)
+                  .toList();
+                  
+              if (bullets.isNotEmpty) {
+                return Column(
+                  children: bullets.map((bullet) => Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(top: 6.0, right: 8.0, left: 4.0),
+                          child: Icon(Icons.circle, size: 6, color: AppColors.primary),
+                        ),
+                        Expanded(
+                          child: SelectableText(
+                            bullet,
+                            style: const TextStyle(fontSize: 14, height: 1.5),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )).toList(),
+                );
+              }
+            }
+
+            // Paragraph layout for detailed summaries
             return SelectableText(
               summaryDisplay,
               textAlign: TextAlign.justify,
               style: const TextStyle(
-                fontSize: 15, 
-                height: 1.8, // Improved line spacing for neat matter
+                fontSize: 14, 
+                height: 1.6,
                 letterSpacing: 0.3,
               ),
             );
@@ -254,11 +290,15 @@ class _PaperFullScreenState extends State<PaperFullScreen> with SingleTickerProv
             const SizedBox(height: AppSpacing.xl),
             const Text('Key Insights', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: AppSpacing.md),
-            _buildInsight('Problem', insights['researchProblem']),
-            _buildInsight('Objective', insights['researchObjective']),
-            _buildInsight('Methodology', insights['methodology']),
-            _buildInsight('Findings', insights['findings']),
-            _buildInsight('Limitations', insights['limitations']),
+            _buildInsightCard('Research Problem', Icons.help_outline_rounded, insights['researchProblem'] ?? insights['problem']),
+            _buildInsightCard('Objective', Icons.track_changes_rounded, insights['objective'] ?? insights['researchObjective']),
+            _buildInsightCard('Dataset Used', Icons.storage_rounded, insights['datasetUsed']),
+            _buildInsightCard('Algorithms Used', Icons.psychology_rounded, insights['algorithmsUsed']),
+            _buildInsightCard('Experimental Results', Icons.science_outlined, insights['experimentalResults']),
+            _buildInsightCard('Accuracy / Performance Metrics', Icons.query_stats_rounded, insights['performanceMetrics']),
+            _buildInsightCard('Findings', Icons.lightbulb_outline_rounded, insights['findings']),
+            _buildInsightCard('Limitations', Icons.block_rounded, insights['limitations']),
+            _buildInsightCard('Future Scope', Icons.explore_outlined, insights['futureScope']),
           ],
           
           const SizedBox(height: 80), // Fab spacing
@@ -276,16 +316,56 @@ class _PaperFullScreenState extends State<PaperFullScreen> with SingleTickerProv
     );
   }
 
-  Widget _buildInsight(String title, dynamic content) {
-    if (content == null || content.toString().isEmpty) return const SizedBox();
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildInsightCard(String title, IconData icon, dynamic content) {
+    if (content == null || content.toString().trim().isEmpty) return const SizedBox();
+    
+    final text = content.toString();
+    final bullets = text
+        .split('\n')
+        .map((e) => e.trim().replaceFirst(RegExp(r'^[-*•]\s*'), ''))
+        .where((e) => e.isNotEmpty)
+        .toList();
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: AppColors.primary.withOpacity(0.15)),
+      ),
+      child: ExpansionTile(
+        leading: Icon(icon, color: AppColors.primary, size: 20),
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.primary),
+        ),
+        childrenPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        expandedCrossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary)),
-          const SizedBox(height: 4),
-          Text(content.toString(), style: const TextStyle(height: 1.5)),
+          if (bullets.isNotEmpty)
+            ...bullets.map((b) => Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(top: 6.0, right: 8.0),
+                    child: Icon(Icons.circle, size: 5, color: Colors.grey),
+                  ),
+                  Expanded(
+                    child: SelectableText(
+                      b,
+                      style: const TextStyle(fontSize: 13, height: 1.4),
+                    ),
+                  ),
+                ],
+              ),
+            )).toList()
+          else
+            SelectableText(
+              text,
+              style: const TextStyle(fontSize: 13, height: 1.4),
+            ),
         ],
       ),
     );
@@ -326,55 +406,123 @@ class _PaperFullScreenState extends State<PaperFullScreen> with SingleTickerProv
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
-        _buildContentSection('Abstract', extracted['abstract']),
-        _buildContentSection('Introduction', extracted['introduction']),
-        _buildContentSection('Literature Review', extracted['literatureReview']),
-        _buildContentSection('Methodology', extracted['methodology']),
-        _buildContentSection('Dataset', extracted['dataset']),
-        _buildContentSection('Results', extracted['results']),
-        _buildContentSection('Discussion', extracted['discussion']),
-        _buildContentSection('Conclusion', extracted['conclusion']),
+        // Metadata Core Card
+        Card(
+          margin: const EdgeInsets.only(bottom: 20),
+          color: AppColors.primary.withOpacity(0.04),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(color: AppColors.primary.withOpacity(0.1)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('METADATA', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.primary, letterSpacing: 1.5)),
+                const SizedBox(height: 8),
+                SelectableText('Title: ${_paper?.title}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
+                SelectableText('Authors: ${_paper?.authors}', style: const TextStyle(fontSize: 13, color: Colors.grey)),
+                if (extracted['keywords'] != null) ...[
+                  const SizedBox(height: 12),
+                  SelectableText('Keywords: ${extracted['keywords']}', style: const TextStyle(fontSize: 12, fontStyle: FontStyle.italic)),
+                ],
+              ],
+            ),
+          ),
+        ),
+
+        _buildContentCard('Abstract', Icons.notes_rounded, extracted['abstract']),
+        _buildContentCard('Introduction', Icons.menu_book_rounded, extracted['introduction'], isBulletSection: true),
+        _buildContentCard('Literature Review', Icons.rate_review_outlined, extracted['literatureReview']),
+        _buildContentCard('Methodology', Icons.architecture_rounded, extracted['methodology'], isBulletSection: true),
+        _buildContentCard('Dataset', Icons.analytics_rounded, extracted['dataset']),
+        _buildContentCard('Results', Icons.fact_check_outlined, extracted['results'], isBulletSection: true),
+        _buildContentCard('Conclusion', Icons.task_alt_rounded, extracted['conclusion'], isBulletSection: true),
         const SizedBox(height: 80),
       ],
     );
   }
 
-  Widget _buildContentSection(String title, dynamic content) {
-    if (content == null || content.toString().isEmpty) return const SizedBox();
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 32.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(4),
+  Widget _buildContentCard(String title, IconData icon, dynamic content, {bool isBulletSection = false}) {
+    if (content == null || content.toString().trim().isEmpty) return const SizedBox();
+
+    final text = content.toString();
+    final bullets = text
+        .split('\n')
+        .map((e) => e.trim().replaceFirst(RegExp(r'^[-*•]\s*'), ''))
+        .where((e) => e.isNotEmpty)
+        .toList();
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 20),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.grey.withOpacity(0.2)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: AppColors.primary, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  title.toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ],
             ),
-            child: Text(
-              title.toUpperCase(), 
-              style: const TextStyle(
-                fontSize: 14, 
-                fontWeight: FontWeight.bold, 
-                color: AppColors.primary,
-                letterSpacing: 1.2,
+            const Divider(height: 24, thickness: 1),
+            if (isBulletSection && bullets.isNotEmpty)
+              ...bullets.map((b) => Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(top: 6.0, right: 8.0, left: 4.0),
+                      child: Icon(Icons.circle, size: 5, color: AppColors.primary),
+                    ),
+                    Expanded(
+                      child: SelectableText(
+                        b,
+                        style: TextStyle(
+                          fontSize: 14,
+                          height: 1.5,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.textDarkPrimary
+                              : AppColors.textLightPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )).toList()
+            else
+              SelectableText(
+                text,
+                textAlign: TextAlign.justify,
+                style: TextStyle(
+                  fontSize: 14,
+                  height: 1.6,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.textDarkPrimary
+                      : AppColors.textLightPrimary,
+                ),
               ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          SelectableText(
-            content.toString(),
-            textAlign: TextAlign.justify,
-            style: TextStyle(
-              fontSize: 15, 
-              height: 1.8, // Neat line spacing
-              color: Theme.of(context).brightness == Brightness.dark 
-                  ? AppColors.textDarkPrimary 
-                  : AppColors.textLightPrimary,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -400,6 +548,7 @@ class _PaperFullScreenState extends State<PaperFullScreen> with SingleTickerProv
 
   Widget _buildCitationCard(String label, dynamic text) {
     if (text == null || text.toString().isEmpty) return const SizedBox();
+    final citationText = text.toString();
     return Card(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
       elevation: 0,
@@ -411,7 +560,20 @@ class _PaperFullScreenState extends State<PaperFullScreen> with SingleTickerProv
         title: Text('$label Citation', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4),
-          child: SelectableText(text.toString(), style: const TextStyle(fontSize: 13)),
+          child: SelectableText(citationText, style: const TextStyle(fontSize: 13)),
+        ),
+        trailing: IconButton(
+          icon: const Icon(Icons.copy_rounded, color: AppColors.primary, size: 20),
+          onPressed: () {
+            Clipboard.setData(ClipboardData(text: citationText));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('$label Citation copied to clipboard!'),
+                behavior: SnackBarBehavior.floating,
+                duration: const Duration(seconds: 2),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -421,30 +583,121 @@ class _PaperFullScreenState extends State<PaperFullScreen> with SingleTickerProv
     final refs = _paper?.references ?? [];
     if (refs.isEmpty) return const Center(child: Text('No references extracted from this document.'));
 
-    return ListView.separated(
+    return ListView.builder(
       padding: const EdgeInsets.all(AppSpacing.lg),
       itemCount: refs.length,
-      separatorBuilder: (context, index) => const Divider(height: 32),
       itemBuilder: (context, index) {
         final ref = refs[index] as Map<String, dynamic>? ?? {};
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '[${index + 1}] ',
-              style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary),
-            ),
-            Expanded(
-              child: SelectableText(
-                ref['title']?.toString() ?? 'Reference',
-                style: const TextStyle(
-                  fontSize: 14, 
-                  height: 1.6,
-                  fontStyle: FontStyle.normal,
+        
+        final rTitle = ref['title']?.toString() ?? 'Unknown Title';
+        final rAuthors = ref['authors']?.toString() ?? 'Unknown Authors';
+        final rJournal = ref['journal']?.toString() ?? 'Academic Proceeding';
+        final rYear = ref['year']?.toString() ?? '';
+        final rDoi = ref['doi']?.toString() ?? '';
+        final rUrl = ref['url']?.toString() ?? '';
+
+        return Card(
+          margin: const EdgeInsets.only(bottom: 16),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(color: Colors.grey.withOpacity(0.15)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        '#${index + 1}',
+                        style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary, fontSize: 12),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: SelectableText(
+                        rTitle,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, height: 1.4),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Icon(Icons.people_outline_rounded, size: 14, color: Colors.grey),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        rAuthors,
+                        style: const TextStyle(color: Colors.grey, fontSize: 13),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    const Icon(Icons.article_outlined, size: 14, color: Colors.grey),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        '$rJournal${rYear.isNotEmpty ? " ($rYear)" : ""}',
+                        style: const TextStyle(color: Colors.grey, fontSize: 12),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                if ((rDoi.isNotEmpty && rDoi != 'N/A') || rUrl.isNotEmpty) ...[
+                  const Divider(height: 16),
+                  Row(
+                    children: [
+                      if (rDoi.isNotEmpty && rDoi != 'N/A') ...[
+                        ActionChip(
+                          label: const Text('Copy DOI', style: TextStyle(fontSize: 11)),
+                          padding: EdgeInsets.zero,
+                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          onPressed: () {
+                            Clipboard.setData(ClipboardData(text: rDoi));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('DOI copied to clipboard!'), duration: Duration(seconds: 1)),
+                            );
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                      if (rUrl.isNotEmpty)
+                        ActionChip(
+                          avatar: const Icon(Icons.open_in_new_rounded, size: 12, color: AppColors.primary),
+                          label: const Text('Open URL', style: TextStyle(fontSize: 11)),
+                          padding: EdgeInsets.zero,
+                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          onPressed: () async {
+                            final uri = Uri.parse(rUrl);
+                            if (await canLaunchUrl(uri)) {
+                              await launchUrl(uri, mode: LaunchMode.externalApplication);
+                            }
+                          },
+                        ),
+                    ],
+                  ),
+                ],
+              ],
             ),
-          ],
+          ),
         );
       },
     );

@@ -20,7 +20,7 @@ exports.analyzePaper = async (text) => {
   }
   try {
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.0-flash",
     });
 
     // Strategy: Pass the beginning of the paper for metadata and the end for references
@@ -31,7 +31,7 @@ exports.analyzePaper = async (text) => {
       paperContext = text;
     } else {
       // Beginning (20k chars) + End (10k chars)
-      paperContext = text.substring(0, 20000) + "\\n...[CONTENT TRUNCATED]...\\n" + text.substring(textLength - 10000);
+      paperContext = text.substring(0, 20000) + "\n...[CONTENT TRUNCATED]...\n" + text.substring(textLength - 10000);
     }
 
     const prompt = `
@@ -50,33 +50,30 @@ Return your response strictly as a JSON object matching this structure:
     "title": "string",
     "authors": "string",
     "abstract": "string",
-    "keywords": "string",
-    "introduction": "string",
+    "keywords": "string", // Comma-separated keywords
+    "introduction": "string (strictly 3-5 concise bullet points, each starting with '- ')",
     "literatureReview": "string",
-    "methodology": "string",
+    "methodology": "string (strictly 3-5 concise bullet points, each starting with '- ')",
     "dataset": "string",
-    "results": "string",
+    "results": "string (strictly 3-5 concise bullet points, each starting with '- ')",
     "discussion": "string",
-    "conclusion": "string"
+    "conclusion": "string (strictly 3-5 concise bullet points, each starting with '- ')"
   },
   "summaries": {
-    "short": "string (100 words)",
-    "medium": "string (300 words)",
-    "detailed": "string (500+ words)",
-    "sectionWise": "string (breakdown by section)"
+    "short": "string (strictly exactly 5 bullet points, each starting with '- ')",
+    "medium": "string (strictly exactly 10 bullet points, each starting with '- ')",
+    "detailed": "string (a detailed summary in concise prose of MAXIMUM 250 words)"
   },
   "insights": {
-    "researchProblem": "string",
-    "researchObjective": "string",
-    "mainContribution": "string",
-    "methodology": "string",
-    "datasetUsed": "string",
-    "algorithmsUsed": "string",
-    "experimentalResults": "string",
-    "performanceMetrics": "string",
-    "findings": "string",
-    "limitations": "string",
-    "futureScope": "string"
+    "researchProblem": "string (concise bullet points starting with '- ')",
+    "objective": "string (concise bullet points starting with '- ')",
+    "datasetUsed": "string (concise bullet points starting with '- ')",
+    "algorithmsUsed": "string (concise bullet points starting with '- ')",
+    "experimentalResults": "string (concise bullet points starting with '- ')",
+    "performanceMetrics": "string (concise bullet points starting with '- ')",
+    "findings": "string (concise bullet points starting with '- ')",
+    "limitations": "string (concise bullet points starting with '- ')",
+    "futureScope": "string (concise bullet points starting with '- ')"
   },
   "topicsExt": {
     "main": ["string", "string"],
@@ -97,7 +94,7 @@ Return your response strictly as a JSON object matching this structure:
     {
       "authors": "string",
       "title": "string",
-      "journal": "string",
+      "journal": "string", // or conference name
       "year": "string",
       "doi": "string",
       "url": "string"
