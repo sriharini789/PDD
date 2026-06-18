@@ -1,0 +1,60 @@
+name: E2E Automation Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: Install Selenium Dependencies
+      run: |
+        cd selenium-automation
+        npm install
+
+    - name: Run Selenium E2E Tests
+      run: |
+        cd selenium-automation
+        npm test
+      continue-on-error: true
+
+    - name: Install Appium Dependencies
+      run: |
+        cd automation
+        npm install
+
+    - name: Run Appium E2E Tests
+      run: |
+        cd automation
+        npm test
+      continue-on-error: true
+
+    - name: Upload Web E2E Reports (Excel & HTML)
+      uses: actions/upload-artifact@v3
+      with:
+        name: Web-E2E-Reports
+        path: |
+          selenium-automation/reports/Web_E2E_Report.xlsx
+          selenium-automation/reports/index.html
+          selenium-automation/reports/failures/
+
+    - name: Upload Mobile E2E Reports (Excel & HTML)
+      uses: actions/upload-artifact@v3
+      with:
+        name: Mobile-E2E-Reports
+        path: |
+          automation/reports/Flutter_E2E_Report.xlsx
+          automation/reports/index.html
+          automation/reports/failures/
