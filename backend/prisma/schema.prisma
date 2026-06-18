@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 Int               @id @default(autoincrement())
+  fullName           String
+  email              String            @unique
+  passwordHash       String
+  isVerified         Boolean           @default(false)
+  verificationToken  String?
+  resetToken         String?
+  resetTokenExpires  DateTime?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  
+  profile            Profile?
+  papers             Paper[]
+  readingLists       ReadingList[]
+  notes              Note[]
+  notifications      Notification[]
+  settings           Settings?
+  supportTickets     SupportTicket[]
+  feedbacks          Feedback[]
+  chatMessages       ChatMessage[]
+}
+
+model Profile {
+  id            Int      @id @default(autoincrement())
+  userId        Int      @unique
+  user          User     @relation(fields: [userId], references: [id])
+  academicLevel String?
+  interests     String[]
+  avatarUrl     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Paper {
+  id              Int            @id @default(autoincrement())
+  userId          Int
+  user            User           @relation(fields: [userId], references: [id])
+  readingListId   Int?
+  readingList     ReadingList?   @relation(fields: [readingListId], references: [id])
+  title           String
+  authors         String?
+  fileName        String
+  fileSize        String?
+  status          String         @default("uploading") // uploading, processing, completed, failed
+  processingStage String?        // extracting, analyzing, summarizing, done
+  summary         String?
+  topics          String[]
+  content         String?
+  citationApa     String?
+  citationMla     String?
+  citationIeee    String?
+  
+  verification    Json?
+  summaries       Json?
+  insights        Json?
+  topicsExt       Json?
+  citations       Json?
+  extractedContent Json?
+  references      Json?
+  metrics         Json?
+
+  isFavorite      Boolean        @default(false)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  
+  chatMessages    ChatMessage[]
+  notes           Note[]
+}
+
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  paperId   Int
+  paper     Paper    @relation(fields: [paperId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  sender    String   // 'user' or 'ai'
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model ReadingList {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  papers    Paper[]
+}
+
+model Note {
+  id              Int      @id @default(autoincrement())
+  paperId         Int
+  paper           Paper    @relation(fields: [paperId], references: [id])
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id])
+  content         String
+  highlightedText String?
+  pageNumber      Int?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Settings {
+  id               Int      @id @default(autoincrement())
+  userId           Int      @unique
+  user             User     @relation(fields: [userId], references: [id])
+  darkMode         Boolean  @default(false)
+  aiModel          String   @default("gemini-1.5-pro")
+  privacyTelemetry Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model SupportTicket {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  subject     String
+  description String
+  status      String   @default("open")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Feedback {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+}
